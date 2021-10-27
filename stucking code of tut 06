@@ -1,0 +1,99 @@
+from ntpath import join
+import os
+import shutil
+import re
+
+web_series={
+	1:"Breaking Bad",
+	2:"Game of Thrones",
+	3:"Lucifer"
+}
+def regex_renamer():
+
+	# Taking input from the user
+
+	print("1. Breaking Bad")
+	print("2. Game of Thrones")
+	print("3. Lucifer")
+
+	webseries_num = int(input("Enter the number of the web series that you wish to rename. 1/2/3: "))
+	season_padding = int(input("Enter the Season Number Padding: "))
+	episode_padding = int(input("Enter the Episode Number Padding: "))
+	parent_direc="corrected_srt"
+	path=os.path.join(parent_direc)
+	if not os.path.exists(path):
+		os.mkdir(path)
+	source_path=os.path.join("wrong_srt",web_series[webseries_num])
+	dir=os.listdir(source_path)
+	file_name=dir
+	if webseries_num == 1:
+		temp_list=[]
+		for file in dir:
+			element =re.split(r"\s",file)
+			file=re.findall(r"\d+",element[2])
+			file_format=re.findall(r"[\.\-]\w\w+$",element[3])
+			if season_padding ==1 :
+    		 		season_num=str(file[0][1])
+			elif season_padding ==2:
+    	 			season_num=str(file[0])
+			if episode_padding ==1 :
+    	 			episode_number=str(file[1][1])
+			elif episode_padding ==2 :
+    		 		episode_number =str(file[1])
+			element[2]="Season "+season_num+" Episode "+episode_number
+			element[3]=file_format[0]
+			temp_list.append(element)
+		
+		
+		for files,j in zip(temp_list , file_name):
+			 	new_filename=files[0]+" "+files[1]+" "+files[2]+files[3]
+			 	filename= j
+			 	if not os.path.isdir(os.path.join("corrected_srt",web_series[webseries_num])):
+						path=os.path.join("corrected_srt",web_series[webseries_num])
+						os.mkdir(path)
+				# else :
+				# 		path= os.path.join("corrected_srt",web_series[webseries_num])
+				# 		for docfile in path :
+				# 			file_path=os.path.join(path,docfile)
+				# 			if os.path.isfile(path,docfile):
+				# 				os.unlink(file_path)
+
+			 	destination_path=os.path.join("corrected_srt",web_series[webseries_num])
+			 	shutil.copyfile(os.path.join(source_path,filename),os.path.join(destination_path,new_filename))
+	else :
+		temp_list=[]
+		for file in dir:
+			element =re.split(r"\-",file)
+			file=re.findall(r"\d+",element[1])
+			file_format=re.findall(r"\w+$",element[2])
+			last_text=re.split(r"\.",element[2])
+			episode_name=last_text[0]
+			
+			if season_padding ==1 :
+    		 		season_num=str(file[0][0])
+			elif season_padding ==2:
+    	 			season_num="0"+str(file[0])
+			if episode_padding ==1 :
+    	 			episode_number=str(file[1][1])
+			elif episode_padding ==2 :
+    		 		episode_number =str(file[1])
+			element[1]="Season "+season_num+" Episode "+episode_number
+			element[2]=episode_name+"."+file_format[0]
+			new_name=element[0]+" - "+element[1]+" - "+element[2]
+			temp_list.append(new_name)
+	
+		for files,j in zip(temp_list , file_name):
+			 	new_filename=files
+			 	filename= j
+			 	if not os.path.isdir(os.path.join("corrected_srt",web_series[webseries_num])):
+						path = os.path.join("corrected_srt",web_series[webseries_num])
+						os.mkdir(path)
+				# else :
+				# 		path=os.path.join("corrected_srt",web_series[webseries_num])
+				# 		for docfile in path:
+				# 			file_path=os.path.join(path,docfile)
+				# 			if os.path.isfile(path,docfile):
+				# 				os.unlink(file_path)
+			 	destination_path=os.path.join("corrected_srt",web_series[webseries_num])
+			 	shutil.copyfile(os.path.join(source_path,filename),os.path.join(destination_path,new_filename))
+regex_renamer()	
